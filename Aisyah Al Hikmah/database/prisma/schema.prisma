@@ -1,0 +1,63 @@
+generator client {
+  provider = "prisma-client-js"
+}
+
+datasource db {
+  provider = "mysql"
+  url      = env("DATABASE_URL")
+}
+
+model Siswa {
+  id                  Int         @id @default(autoincrement())
+  namaSiswa           String      @unique
+  tglLahir            String
+  alamat              String
+  noTelepon           Int
+  Nilai               Nilai[]
+  Pelanggaran         Pelanggaran[]
+}
+
+model Mapel {
+  id                  Int         @id @default(autoincrement())
+  namaMapel           String      @unique
+  kategoriMapel       String
+  Nilai               Nilai[]
+}
+
+model Guru {
+  id                  Int         @id @default(autoincrement())
+  namaGuru            String      @unique
+  email               String
+  noTelepon           Int
+  Nilai               Nilai[]
+}
+
+model Kelas {
+  id                  Int         @id @default(autoincrement())
+  ruangan             Int  
+  status              String
+  Pelanggaran         Pelanggaran[]       
+}
+
+model Nilai {
+  id                  Int         @id @default(autoincrement())
+  nilaiSiswa          Int
+  tanggal             String
+  mapelId             Int?        
+  siswaId             Int?
+  guruId              Int?
+  Mapel               Mapel?  @relation(fields: [mapelId], references: [id])
+  Siswa               Siswa?  @relation(fields: [siswaId], references: [id])  
+  Guru                Guru?   @relation(fields: [guruId], references: [id])       
+}
+
+model Pelanggaran {
+  id                  Int         @id @default(autoincrement())
+  detailPelanggaran   String
+  poinPelanggaran     String
+  tanggal             String 
+  siswaId             Int?        
+  kelasId             Int?                
+  Siswa               Siswa?  @relation(fields: [siswaId], references: [id])
+  Kelas               Kelas?  @relation(fields: [kelasId], references: [id])
+}
