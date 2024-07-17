@@ -1,0 +1,81 @@
+generator client {
+  provider = "prisma-client-js"
+}
+
+datasource db {
+  provider = "mysql"
+  url      = env("DATABASE_URL")
+}
+
+model Pengguna {
+  id              String      @id @default(uuid())
+  nama            String      @unique
+  password        String
+  Transaksi       Transaksi[]
+}
+
+model Produk {
+  id              String            @id @default(uuid())
+  nama            String            @unique
+  stok            Int
+  harga           Int
+  DetailTransaksi DetailTransaksi[]
+  DetailPembelian DetailPembelian[]
+}
+
+model Kurir {
+  id              String @id @default(uuid())
+  nama            String @unique
+  kontak          String
+  DetailPembelian DetailPembelian[]
+}
+
+model Transaksi {
+  id                String           @id @default(uuid())
+  penggunaid        String?
+  tanggal           String
+  total             Int
+  Pengguna          Pengguna?        @relation(fields: [penggunaid], references: [id])
+  DetailTransaksi   DetailTransaksi[]
+}
+
+model DetailTransaksi {
+  id        String    @id @default(uuid())
+  transaksiid String?    
+  produkid    String?
+  jumlah      Int
+  hargasatuan Int
+  subTotal    Int
+  Transaksi   Transaksi? @relation(fields: [transaksiid], references: [id])
+  Produk      Produk?    @relation(fields: [produkid], references: [id])
+}
+
+model Pemasok {
+  id        String      @id @default(uuid())
+  nama      String      @unique
+  kontak    String
+  alamat    String
+  Pembelian Pembelian[]
+}
+
+model Pembelian {
+  id                String           @id @default(uuid())
+  pemasokid         String?
+  tanggal           String
+  total             Int
+  Pemasok           Pemasok?          @relation(fields: [pemasokid], references: [id])
+  DetailPembelian   DetailPembelian[]
+}
+
+model DetailPembelian {
+  id          String    @id @default(uuid())
+  pembelianid String?    
+  produkid    String?
+  kuririd     String?
+  jumlah      Int
+  hargasatuan Int
+  subtotal    Int
+  Pembelian   Pembelian? @relation(fields: [pembelianid], references: [id])
+  Produk      Produk?    @relation(fields: [produkid], references: [id])
+  Kurir       Kurir?    @relation(fields: [kuririd], references: [id])
+}
